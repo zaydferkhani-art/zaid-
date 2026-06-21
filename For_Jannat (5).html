@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)file:///C:/Users/LENOVO/Desktop/html1/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fce4ec">
+  <title>For Jannat</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-1: #fff0f5;
+      --bg-2: #fce4ec;
+      --bg-3: #f8bbd9;
+      --bg-4: #f3e5f5;
+      --rose: #e91e63;
+      --rose-light: #f48fb1;
+      --rose-deep: #c2185b;
+      --petal: #ffb7c5;
+      --leaf: #66bb6a;
+      --leaf-dark: #43a047;
+      --stem: #558b2f;
+      --gold: #d4a574;
+      --text: #6d214f;
+      --shadow: rgba(109, 33, 79, 0.15);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, var(--bg-1) 0%, var(--bg-2) 35%, var(--bg-4) 70%, var(--bg-3) 100%);
+      position: relative;
+    }
+
+    /* Ambient glow */
+    .glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255, 182, 193, 0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 20%, rgba(243, 229, 245, 0.6) 0%, transparent 60%),
+        radial-gradient(ellipse 35% 25% at 80% 25%, rgba(255, 240, 245, 0.5) 0%, transparent 55%);
+      animation: glowPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      from { opacity: 0.7; }
+      to   { opacity: 1; }
+    }
+
+    /* Floating petals container */
+    #petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .petal {
+      position: absolute;
+      width: var(--size, 14px);
+      height: calc(var(--size, 14px) * 1.4);
+      background: linear-gradient(135deg, var(--petal) 0%, #ff8fab 60%, #ffc2d4 100%);
+      border-radius: 50% 50% 50% 0;
+      opacity: 0;
+      transform: rotate(var(--rot, 0deg));
+      animation: floatPetal var(--dur, 12s) linear var(--delay, 0s) infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes floatPetal {
+      0% {
+        opacity: 0;
+        transform: translateY(-5vh) translateX(0) rotate(var(--rot, 0deg)) scale(0.6);
+      }
+      8% { opacity: var(--peak, 0.7); }
+      90% { opacity: var(--peak, 0.5); }
+      100% {
+        opacity: 0;
+        transform: translateY(105vh) translateX(var(--drift, 40px)) rotate(calc(var(--rot, 0deg) + 180deg)) scale(0.8);
+      }
+    }
+
+    /* Petals that shed directly from the bouquet itself, drifting a short
+       distance down and outward before fading — distinct from the ambient
+       sky petals, anchored to the bouquet's own on-screen position. */
+    .petal-from-bouquet {
+      position: fixed;
+      width: var(--size, 12px);
+      height: calc(var(--size, 12px) * 1.4);
+      left: 0;
+      top: 0;
+      background: linear-gradient(135deg, var(--petal) 0%, #ff8fab 60%, #ffc2d4 100%);
+      border-radius: 50% 50% 50% 0;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 7;
+      will-change: transform, opacity;
+      animation: petalShed var(--bp-dur, 2.2s) cubic-bezier(0.4, 0.1, 0.6, 1) forwards;
+    }
+
+    @keyframes petalShed {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(var(--rot, 0deg)) scale(0.5);
+      }
+      10% { opacity: var(--peak, 0.85); }
+      75% { opacity: var(--peak, 0.6); }
+      100% {
+        opacity: 0;
+        transform: translate(var(--bp-x, 30px), var(--bp-y, 140px)) rotate(calc(var(--rot, 0deg) + 150deg)) scale(0.75);
+      }
+    }
+
+    /* Main scene */
+    .scene {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      padding: clamp(1.5rem, 4vh, 2.5rem) 1rem;
+      user-select: none;
+    }
+
+    .scene-top {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .scene-bottom {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Message */
+    .message {
+      text-align: center;
+      margin-bottom: 0;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: messageIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+    }
+
+    .message h1 {
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 20px rgba(233, 30, 99, 0.2);
+      line-height: 1.3;
+    }
+
+    .message .name {
+      color: var(--rose-deep);
+    }
+
+    .message .heart {
+      display: inline-block;
+      animation: heartBeat 1.4s ease-in-out 1.8s infinite;
+    }
+
+    @keyframes messageIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      15%      { transform: scale(1.18); }
+      30%      { transform: scale(1); }
+      45%      { transform: scale(1.12); }
+    }
+
+    /* Bouquet wrapper */
+    .bouquet {
+      position: relative;
+      width: clamp(280px, 82vw, 420px);
+      height: clamp(260px, 55vw, 360px);
+      margin: 0 auto;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bouquet:active .wrap {
+      transform: translateX(-50%) translateY(-1px) scale(0.97);
+    }
+
+    .wrap.bounce {
+      animation: bouquetBounce 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes bouquetBounce {
+      0%   { transform: translateX(-50%) translateY(-1px) scale(1); }
+      25%  { transform: translateX(-50%) translateY(-14px) scale(1.045); }
+      45%  { transform: translateX(-50%) translateY(2px) scale(0.985); }
+      65%  { transform: translateX(-50%) translateY(-6px) scale(1.015); }
+      85%  { transform: translateX(-50%) translateY(1px) scale(0.997); }
+      100% { transform: translateX(-50%) translateY(-1px) scale(1); }
+    }
+
+    .wrap {
+      position: absolute;
+      bottom: 1px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-1px);
+      width: 100%;
+      height: 100%;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .ribbon {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 36px;
+      z-index: 6;
+      opacity: 0;
+      animation: wrapIn 0.6s ease 1.9s forwards;
+    }
+
+    .ribbon::before,
+    .ribbon::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 22px;
+      background: linear-gradient(135deg, var(--rose-light), var(--rose-deep));
+      border-radius: 0 0 50% 50%;
+      box-shadow: 0 2px 6px rgba(194, 24, 91, 0.3);
+    }
+
+    .ribbon::before { left: 0; transform: rotate(-25deg); }
+    .ribbon::after  { right: 0; transform: rotate(25deg); }
+
+    @keyframes wrapIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Stems */
+    .stems {
+      position: absolute;
+      bottom: clamp(55px, 16vw, 75px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 65%;
+      z-index: 1;
+    }
+
+    .stem {
+      position: absolute;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #81c784, #388e3c);
+      border-radius: 1px;
+      transform-origin: bottom center;
+      opacity: 0;
+      animation: stemGrow 1s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    }
+
+    .stem-1 { left: 50%; height: 0; animation-delay: 0.5s;  --target-h: 70%; transform: rotate(0deg); }
+    .stem-2 { left: 36%; height: 0; animation-delay: 0.6s;  --target-h: 60%; transform: rotate(-10deg); }
+    .stem-3 { left: 64%; height: 0; animation-delay: 0.65s; --target-h: 62%; transform: rotate(9deg); }
+    .stem-4 { left: 23%; height: 0; animation-delay: 0.75s; --target-h: 48%; transform: rotate(-18deg); }
+    .stem-5 { left: 77%; height: 0; animation-delay: 0.8s;  --target-h: 50%; transform: rotate(16deg); }
+
+    @keyframes stemGrow {
+      from { height: 0; opacity: 0; }
+      to   { height: var(--target-h); opacity: 1; }
+    }
+
+    /* Green leaves */
+    .leaf {
+      position: absolute;
+      width: clamp(14px, 4vw, 20px);
+      height: clamp(8px, 2.4vw, 11px);
+      background: linear-gradient(135deg, #4dd0e1, #00897b);
+      border-radius: 0 80% 0 80%;
+      opacity: 0;
+      transform: scale(0);
+      animation: leafPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      box-shadow: 0 1px 4px rgba(0, 137, 123, 0.25);
+    }
+
+    .leaf-1 { bottom: 40%; left: 49%; animation-delay: 1.1s;  transform-origin: right center; }
+    .leaf-2 { bottom: 33%; left: 38%; animation-delay: 1.2s;  transform-origin: right center; transform: scale(0) rotate(-30deg); }
+    .leaf-3 { bottom: 35%; left: 58%; animation-delay: 1.25s; transform-origin: left center;  transform: scale(0) rotate(25deg); }
+    .leaf-4 { bottom: 26%; left: 29%; animation-delay: 1.35s; transform-origin: right center; transform: scale(0) rotate(-42deg); }
+    .leaf-5 { bottom: 28%; left: 68%; animation-delay: 1.4s;  transform-origin: left center;  transform: scale(0) rotate(38deg); }
+    .leaf-6 { bottom: 18%; left: 43%; animation-delay: 1.45s; transform-origin: right center; transform: scale(0) rotate(-20deg); }
+    .leaf-7 { bottom: 20%; left: 53%; animation-delay: 1.5s;  transform-origin: left center;  transform: scale(0) rotate(18deg); }
+    .leaf-8 { bottom: 16%; left: 20%; animation-delay: 1.55s; transform-origin: right center; transform: scale(0) rotate(-50deg); }
+
+    @keyframes leafPop {
+      from { opacity: 0; transform: scale(0) rotate(var(--lr, 0deg)); }
+      to   { opacity: 1; transform: scale(1) rotate(var(--lr, 0deg)); }
+    }
+
+    /* Ground line — the elegant base all stems appear to grow from */
+    .ground-line {
+      position: absolute;
+      bottom: clamp(48px, 14vw, 64px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78%;
+      max-width: 320px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(67, 160, 71, 0.55) 12%,
+        rgba(56, 142, 60, 0.75) 50%,
+        rgba(67, 160, 71, 0.55) 88%,
+        transparent 100%);
+      z-index: 0;
+      opacity: 0;
+      animation: groundFadeIn 0.7s ease 0.35s forwards;
+    }
+
+    .ground-line::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%);
+      width: 88%;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(85, 139, 47, 0.28) 0%, rgba(85, 139, 47, 0.12) 55%, transparent 80%);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    @keyframes groundFadeIn {
+      from { opacity: 0; transform: translateX(-50%) scaleX(0.85); }
+      to   { opacity: 1; transform: translateX(-50%) scaleX(1); }
+    }
+
+    /* Grass blades — clustered low, right at the ground line, around the stem bases */
+    .grass {
+      position: absolute;
+      bottom: clamp(48px, 14vw, 64px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78%;
+      max-width: 320px;
+      height: 22px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .grass-blade {
+      position: absolute;
+      bottom: 0;
+      width: 2.5px;
+      height: var(--gh, 12px);
+      background: linear-gradient(180deg, #4db6ac, #2e7d32);
+      border-radius: 50% 50% 0 0;
+      transform-origin: bottom center;
+      opacity: 0;
+      animation: grassGrow 0.5s ease var(--gd, 1.5s) forwards;
+    }
+
+    @keyframes grassGrow {
+      from { opacity: 0; transform: scaleY(0); }
+      to   { opacity: 0.85; transform: scaleY(1) rotate(var(--gr, 0deg)); }
+    }
+
+    /* Glowing particles around flowers */
+    .flower-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      overflow: visible;
+    }
+
+    .f-particle {
+      position: absolute;
+      width: var(--ps, 4px);
+      height: var(--ps, 4px);
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 30%, rgba(255, 138, 128, 0.9) 100%);
+      box-shadow: 0 0 6px 2px rgba(255, 100, 100, 0.7), 0 0 14px 4px rgba(255, 82, 82, 0.35);
+      opacity: 0;
+      animation: particleDrift var(--pd, 3s) ease-in-out var(--pdl, 0s) infinite;
+    }
+
+    @keyframes particleDrift {
+      0%, 100% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+      20%      { opacity: var(--po, 0.9); }
+      50%      { opacity: var(--po, 0.7); transform: translate(var(--px, 8px), var(--py, -12px)) scale(1); }
+      80%      { opacity: var(--po, 0.5); }
+    }
+
+    /* Flower base */
+    .flower {
+      position: absolute;
+      transform: translate(-50%, -42%) scale(0) rotate(var(--stem-rot, 0deg));
+      transform-origin: center center;
+      opacity: 0;
+      z-index: 3;
+      animation: bloom 1.1s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    }
+
+    @keyframes bloom {
+      0%   { transform: translate(-50%, -42%) scale(0) rotate(calc(var(--stem-rot, 0deg) - 15deg)); opacity: 0; }
+      60%  { transform: translate(-50%, -42%) scale(calc(var(--flower-scale, 1) * 1.08)) rotate(calc(var(--stem-rot, 0deg) + 2deg)); opacity: 1; }
+      100% { transform: translate(-50%, -42%) scale(var(--flower-scale, 1)) rotate(var(--stem-rot, 0deg)); opacity: 1; }
+    }
+
+    /* Red glowing flowers */
+    .glow-flower {
+      width: clamp(56px, 16vw, 78px);
+      height: clamp(56px, 16vw, 78px);
+    }
+
+    .glow-flower .flower-glow {
+      position: absolute;
+      inset: -25%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 82, 82, 0.37) 0%, rgba(229, 57, 53, 0.14) 45%, transparent 70%);
+      animation: flowerGlow 3s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes flowerGlow {
+      from { opacity: 0.45; transform: scale(0.95); }
+      to   { opacity: 0.75; transform: scale(1.05); }
+    }
+
+    .glow-flower .fp {
+      position: absolute;
+      width: 44%;
+      height: 44%;
+      border-radius: 50% 50% 50% 0;
+      background: linear-gradient(145deg, #ff8a80 0%, #e53935 45%, #b71c1c 100%);
+      box-shadow:
+        0 0 7px rgba(255, 82, 82, 0.41),
+        0 0 15px rgba(229, 57, 53, 0.22),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.12);
+      top: 6%;
+      left: 28%;
+      transform-origin: bottom right;
+    }
+
+    .glow-flower .fp-1 { transform: rotate(0deg); }
+    .glow-flower .fp-2 { transform: rotate(60deg); }
+    .glow-flower .fp-3 { transform: rotate(120deg); }
+    .glow-flower .fp-4 { transform: rotate(180deg); }
+    .glow-flower .fp-5 { transform: rotate(240deg); }
+    .glow-flower .fp-6 { transform: rotate(300deg); }
+
+    .glow-flower .flower-core {
+      position: absolute;
+      width: 28%;
+      height: 28%;
+      top: 36%;
+      left: 36%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ff7043, #c62828);
+      box-shadow: 0 0 8px rgba(255, 82, 82, 0.6);
+      z-index: 2;
+    }
+
+    /* Five flower positions — each anchored exactly to its matching stem's tip,
+       with rotation matched to the stem angle so the bloom sits naturally on top */
+    .flower-center    { top: 34.8%; left: 50%;    --stem-rot: 0deg;   animation-delay: 0.9s;  z-index: 6; }
+    .flower-left      { top: 41.9%; left: 29.8%;  --stem-rot: -10deg; animation-delay: 1.05s; z-index: 5; }
+    .flower-right     { top: 40.5%; left: 69.8%;  --stem-rot: 9deg;   animation-delay: 1.1s;  z-index: 5; }
+    .flower-far-left  { top: 50.6%; left: 14.2%;  --stem-rot: -18deg; animation-delay: 1.2s;  z-index: 4; }
+    .flower-far-right { top: 49.1%; left: 85.2%;  --stem-rot: 16deg;  animation-delay: 1.3s;  z-index: 4; }
+
+    .flower-left.glow-flower,
+    .flower-right.glow-flower {
+      width: clamp(50px, 14.5vw, 70px);
+      height: clamp(50px, 14.5vw, 70px);
+    }
+
+    .flower-far-left.glow-flower,
+    .flower-far-right.glow-flower {
+      width: clamp(44px, 13vw, 62px);
+      height: clamp(44px, 13vw, 62px);
+    }
+
+    /* Gentle sway after bloom */
+    .flower.bloomed {
+      animation: none;
+      opacity: 1;
+      transform: translate(-50%, -42%) scale(var(--flower-scale, 1)) rotate(var(--stem-rot, 0deg));
+    }
+
+    .flower.bloomed.sway {
+      animation: sway var(--sway-dur, 4s) ease-in-out infinite;
+      animation-delay: var(--sway-delay, 0s);
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: translate(-50%, -42%) scale(var(--flower-scale, 1)) rotate(calc(var(--stem-rot, 0deg) - 2deg)); }
+      50%      { transform: translate(-50%, -42%) scale(calc(var(--flower-scale, 1) * 1.02)) rotate(calc(var(--stem-rot, 0deg) + 2deg)); }
+    }
+
+    /* Sparkles on tap */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10;
+      font-size: 1rem;
+      animation: sparkleOut 1s ease forwards;
+    }
+
+    @keyframes sparkleOut {
+      0%   { opacity: 1; transform: translate(0, 0) scale(0.5); }
+      100% { opacity: 0; transform: translate(var(--sx, 0), var(--sy, -40px)) scale(1.2); }
+    }
+
+    /* Global tap emoji burst */
+    .emoji-burst-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .emoji-burst {
+      position: absolute;
+      left: 0;
+      top: 0;
+      will-change: transform, opacity;
+      font-size: var(--eb-size, 1.4rem);
+      opacity: 0;
+      transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(0.6);
+      animation: emojiBurstFloat var(--eb-dur, 1.7s) cubic-bezier(0.16, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes emojiBurstFloat {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(0.5);
+      }
+      12% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translate(calc(var(--eb-x, 0px) * 0.15), calc(var(--eb-y, -60px) * 0.15)) rotate(calc(var(--eb-rot, 30deg) * 0.2)) scale(1.05);
+      }
+      75% {
+        opacity: 0.9;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translate(var(--eb-x, 0px), var(--eb-y, -120px)) rotate(var(--eb-rot, 30deg)) scale(0.85);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .emoji-burst { animation: none; opacity: 0; }
+    }
+
+    /* Hint text */
+    .hint {
+      margin-top: clamp(0.5rem, 2vw, 1rem);
+      font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+      color: rgba(109, 33, 79, 0.55);
+      opacity: 0;
+      animation: messageIn 0.8s ease 2.4s forwards;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    /* Fading welcome whisper — appears a few seconds after load, then fades away */
+    .whisper-toast {
+      position: fixed;
+      left: 50%;
+      bottom: clamp(1.25rem, 6vh, 2.5rem);
+      transform: translateX(-50%) translateY(10px);
+      max-width: min(86vw, 360px);
+      padding: 0.65rem 1.1rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(109, 33, 79, 0.12);
+      color: var(--text);
+      font-size: clamp(0.78rem, 2.6vw, 0.92rem);
+      line-height: 1.4;
+      text-align: center;
+      letter-spacing: 0.01em;
+      white-space: pre-line;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      animation: whisperFade 5.5s ease forwards;
+    }
+
+    @keyframes whisperFade {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      78%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .whisper-toast { animation: none; opacity: 0; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .flower { transform: translate(-50%, -42%) scale(var(--flower-scale, 1)) rotate(var(--stem-rot, 0deg)); opacity: 1; }
+      .stem   { height: var(--target-h); opacity: 1; }
+      .leaf   { opacity: 1; transform: scale(1); }
+      .grass-blade { opacity: 0.85; transform: scaleY(1); }
+      .ground-line { opacity: 1; transform: translateX(-50%) scaleX(1); }
+      .f-particle { opacity: 0.7; }
+      .message, .hint, .ribbon { opacity: 1; transform: none; }
+    }
+
+    /* Small screens */
+    @media (max-height: 500px) {
+      .scene { padding: 0.75rem 1rem; min-height: 100vh; }
+      .bouquet { height: clamp(200px, 45vh, 260px); }
+      .message h1 { font-size: clamp(1.4rem, 5vw, 2rem); }
+      .hint { display: none; }
+    }
+
+    /* Narrow phones — flower sizes use vw units that don't shrink as fast
+       as the bouquet's own width on tall, narrow screens, which made the
+       five blooms crowd and overlap. Scale every flower head down here so
+       they keep clear daylight between them; stem/leaf/ground positions
+       are untouched since they're percentage-based and stay correct. */
+    @media (max-width: 420px) {
+      .glow-flower {
+        width: clamp(40px, 12.5vw, 56px);
+        height: clamp(40px, 12.5vw, 56px);
+      }
+
+      .flower-left.glow-flower,
+      .flower-right.glow-flower {
+        width: clamp(36px, 11.2vw, 50px);
+        height: clamp(36px, 11.2vw, 50px);
+      }
+
+      .flower-far-left.glow-flower,
+      .flower-far-right.glow-flower {
+        width: clamp(31px, 9.8vw, 44px);
+        height: clamp(31px, 9.8vw, 44px);
+      }
+    }
+
+    @media (max-width: 340px) {
+      .glow-flower {
+        width: clamp(34px, 11vw, 48px);
+        height: clamp(34px, 11vw, 48px);
+      }
+
+      .flower-left.glow-flower,
+      .flower-right.glow-flower {
+        width: clamp(31px, 10vw, 43px);
+        height: clamp(31px, 10vw, 43px);
+      }
+
+      .flower-far-left.glow-flower,
+      .flower-far-right.glow-flower {
+        width: clamp(27px, 8.8vw, 38px);
+        height: clamp(27px, 8.8vw, 38px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="emoji-burst-layer" id="emojiBurstLayer" aria-hidden="true"></div>
+  <div id="petals" aria-hidden="true"><div class="petal" style="--size: 14.245510526249978px; left: 52.4725%; --rot: 121.94207055820567deg; --dur: 15.48259733831214s; --delay: 7.958932931863475s; --drift: -44.47076090989961px; --peak: 0.66;"></div><div class="petal" style="--size: 18.230628370884325px; left: 6.74767%; --rot: 271.93600625340895deg; --dur: 16.53154964369083s; --delay: 2.1214223030897514s; --drift: -53.72854834119647px; --peak: 0.35;"></div><div class="petal" style="--size: 18.520863634883792px; left: 60.197%; --rot: 337.12414691168965deg; --dur: 16.339814107659024s; --delay: 3.018953428967401s; --drift: -33.41460652811985px; --peak: 0.72;"></div><div class="petal" style="--size: 11.652017577377423px; left: 73.6211%; --rot: 287.7298888389999deg; --dur: 17.630067191642453s; --delay: 4.375330257600378s; --drift: 2.286159834134182px; --peak: 0.45;"></div><div class="petal" style="--size: 20.276597981403917px; left: 53.6924%; --rot: 141.37052794509353deg; --dur: 17.251284882764946s; --delay: 3.2876336511086066s; --drift: 15.554812864776792px; --peak: 0.70;"></div><div class="petal" style="--size: 9.61047072133242px; left: 41.6051%; --rot: 222.9025045039727deg; --dur: 16.25303822942935s; --delay: 0.6531856846024837s; --drift: -17.45767094103457px; --peak: 0.38;"></div><div class="petal" style="--size: 21.755950306272183px; left: 66.5823%; --rot: 220.39445099514302deg; --dur: 22.033355809882487s; --delay: 1.7611264848528592s; --drift: 57.92009170619477px; --peak: 0.51;"></div><div class="petal" style="--size: 15.261928272610835px; left: 33.532%; --rot: 141.74421163723858deg; --dur: 11.064023980838204s; --delay: 1.8874937646974033s; --drift: 5.4908405302517025px; --peak: 0.51;"></div><div class="petal" style="--size: 11.390994734627327px; left: 36.5729%; --rot: 287.5107789119116deg; --dur: 16.949988762650598s; --delay: 5.5629386841672055s; --drift: 18.5799776350284px; --peak: 0.51;"></div><div class="petal" style="--size: 16.887663361060675px; left: 48.6632%; --rot: 26.13045715301037deg; --dur: 19.366808435032624s; --delay: 6.6659471852128345s; --drift: -22.77990655293398px; --peak: 0.62;"></div><div class="petal" style="--size: 10.621780894584786px; left: 94.5022%; --rot: 96.168371525062deg; --dur: 22.056915471418044s; --delay: 4.489413535517097s; --drift: 50.78443995581223px; --peak: 0.50;"></div><div class="petal" style="--size: 20.306794326682216px; left: 79.8586%; --rot: 273.55256449441deg; --dur: 18.984114987185897s; --delay: 4.547243057778797s; --drift: 42.750593015733784px; --peak: 0.66;"></div><div class="petal" style="--size: 10.05731231092954px; left: 79.6697%; --rot: 328.46500118384677deg; --dur: 20.580294910033643s; --delay: 4.4183872251558505s; --drift: 23.477695910558538px; --peak: 0.51;"></div><div class="petal" style="--size: 10.147688796955388px; left: 66.9499%; --rot: 150.88993806870985deg; --dur: 15.650926350200635s; --delay: 0.3527287867827553s; --drift: 3.111406947795416px; --peak: 0.40;"></div><div class="petal" style="--size: 16.201676354231px; left: 57.798%; --rot: 65.1307460517972deg; --dur: 12.214493875976618s; --delay: 4.86181222504064s; --drift: -2.4551015067801316px; --peak: 0.38;"></div><div class="petal" style="--size: 19.297652848497698px; left: 85.359%; --rot: 217.57299453785404deg; --dur: 10.30102820955758s; --delay: 4.444298637757826s; --drift: 51.086359405620385px; --peak: 0.78;"></div><div class="petal" style="--size: 16.33736091020363px; left: 59.5142%; --rot: 12.58042347905782deg; --dur: 13.40648476051433s; --delay: 7.667376279786587s; --drift: -47.48577634139592px; --peak: 0.66;"></div><div class="petal" style="--size: 21.374471041877598px; left: 10.5374%; --rot: 75.5240836934921deg; --dur: 18.048313700951553s; --delay: 4.136721340567551s; --drift: -29.98062144982643px; --peak: 0.46;"></div><div class="petal" style="--size: 20.432571091396163px; left: 75.7662%; --rot: 45.130885944248334deg; --dur: 10.891508813186912s; --delay: 1.64219071078284s; --drift: 47.10212633830932px; --peak: 0.42;"></div><div class="petal" style="--size: 8.464124049895208px; left: 32.2223%; --rot: 200.26675647780758deg; --dur: 13.306665480839133s; --delay: 1.5148606247339664s; --drift: -56.22310571643456px; --peak: 0.66;"></div><div class="petal" style="--size: 19.04558551463903px; left: 18.2316%; --rot: 245.17746564150193deg; --dur: 17.293724128809536s; --delay: 0.4580590995200682s; --drift: 38.18694101902547px; --peak: 0.70;"></div><div class="petal" style="--size: 17.353679055880527px; left: 2.92386%; --rot: 215.62855430617742deg; --dur: 16.127408813081356s; --delay: 3.9671121527947344s; --drift: -17.523283421839736px; --peak: 0.79;"></div></div>
+
+  <main class="scene">
+    <header class="message scene-top">
+      <h1>For <span class="name">Jannat</span> <span class="heart" aria-hidden="true">❤️</span></h1>
+    </header>
+
+    <div class="scene-bottom">
+    <div class="bouquet" id="bouquet" role="img" aria-label="Animated romantic flower bouquet">
+      <div class="wrap">
+        <div class="ground-line" aria-hidden="true"></div>
+        <div class="grass" id="grass"></div>
+        <div class="stems" aria-hidden="true">
+          <div class="stem stem-1"></div>
+          <div class="stem stem-2"></div>
+          <div class="stem stem-3"></div>
+          <div class="stem stem-4"></div>
+          <div class="stem stem-5"></div>
+          <div class="leaf leaf-1" style="--lr: 0deg;"></div>
+          <div class="leaf leaf-2" style="--lr: -30deg;"></div>
+          <div class="leaf leaf-3" style="--lr: 25deg;"></div>
+          <div class="leaf leaf-4" style="--lr: -42deg;"></div>
+          <div class="leaf leaf-5" style="--lr: 38deg;"></div>
+          <div class="leaf leaf-6" style="--lr: -20deg;"></div>
+          <div class="leaf leaf-7" style="--lr: 18deg;"></div>
+          <div class="leaf leaf-8" style="--lr: -50deg;"></div>
+        </div>
+
+        <div class="flower-particles" id="flowerParticles" aria-hidden="true"><div class="f-particle" style="left: 22%; top: 38%; --ps: 3.7232421180234043px; --pd: 2.93980390198282s; --pdl: 0s; --px: -0.4785356688119915px; --py: -15.828858563265348px; --po: 0.93;"></div><div class="f-particle" style="left: 30%; top: 48%; --ps: 5.189099407817505px; --pd: 2.6686045357223365s; --pdl: 0.25s; --px: -5.144956656518431px; --py: -20.476064581147554px; --po: 0.70;"></div><div class="f-particle" style="left: 42%; top: 32%; --ps: 3.161729481149424px; --pd: 3.8022513733038372s; --pdl: 0.5s; --px: -2.3921084354921636px; --py: -20.063497238917087px; --po: 0.63;"></div><div class="f-particle" style="left: 50%; top: 42%; --ps: 5.797620276186857px; --pd: 4.438373293038182s; --pdl: 0.75s; --px: 1.014296482104168px; --py: -8.618863340585541px; --po: 0.71;"></div><div class="f-particle" style="left: 58%; top: 36%; --ps: 3.434689794855456px; --pd: 4.046322358978885s; --pdl: 1s; --px: -5.5536193739975435px; --py: -15.148356489979557px; --po: 0.77;"></div><div class="f-particle" style="left: 68%; top: 46%; --ps: 4.793860091076749px; --pd: 2.559766535643388s; --pdl: 1.25s; --px: 2.894333364311416px; --py: -18.75953094501553px; --po: 0.73;"></div><div class="f-particle" style="left: 35%; top: 55%; --ps: 3.3444841413933144px; --pd: 3.5611154350685705s; --pdl: 1.5s; --px: 4.446915892217813px; --py: -19.281266962322015px; --po: 0.64;"></div><div class="f-particle" style="left: 55%; top: 52%; --ps: 3.6377899309668287px; --pd: 3.6501377903668955s; --pdl: 1.75s; --px: 5.02499470030533px; --py: -15.101750872452977px; --po: 0.70;"></div><div class="f-particle" style="left: 46%; top: 28%; --ps: 5.5582345672647016px; --pd: 2.58690511750389s; --pdl: 2s; --px: -0.11891304348407594px; --py: -16.92798941021389px; --po: 0.82;"></div><div class="f-particle" style="left: 62%; top: 58%; --ps: 4.4679874788452905px; --pd: 4.273494489086562s; --pdl: 2.25s; --px: -3.6488106240545317px; --py: -13.839266501828146px; --po: 0.64;"></div><div class="f-particle" style="left: 26%; top: 58%; --ps: 3.01874129274353px; --pd: 2.6265797158287025s; --pdl: 2.5s; --px: -5.658779065230952px; --py: -12.661963760816445px; --po: 0.68;"></div><div class="f-particle" style="left: 72%; top: 40%; --ps: 3.680646366290439px; --pd: 3.795829496122696s; --pdl: 2.75s; --px: -6.1409879479792675px; --py: -12.146846647984683px; --po: 0.95;"></div></div>
+
+        <div class="flower glow-flower flower-far-left bloomed sway" data-flower="" style="--sway-dur: 3.8s; --sway-delay: 0.15s; --flower-scale: 0.94;">
+          <div class="flower-glow"></div>
+          <div class="fp fp-1"></div>
+          <div class="fp fp-2"></div>
+          <div class="fp fp-3"></div>
+          <div class="fp fp-4"></div>
+          <div class="fp fp-5"></div>
+          <div class="fp fp-6"></div>
+          <div class="flower-core"></div>
+        </div>
+
+        <div class="flower glow-flower flower-left bloomed sway" data-flower="" style="--sway-dur: 3.5s; --sway-delay: 0s; --flower-scale: 1.05;">
+          <div class="flower-glow"></div>
+          <div class="fp fp-1"></div>
+          <div class="fp fp-2"></div>
+          <div class="fp fp-3"></div>
+          <div class="fp fp-4"></div>
+          <div class="fp fp-5"></div>
+          <div class="fp fp-6"></div>
+          <div class="flower-core"></div>
+        </div>
+
+        <div class="flower glow-flower flower-center bloomed sway" data-flower="" style="--sway-dur: 4.3s; --sway-delay: 0.3s; --flower-scale: 1.0;">
+          <div class="flower-glow"></div>
+          <div class="fp fp-1"></div>
+          <div class="fp fp-2"></div>
+          <div class="fp fp-3"></div>
+          <div class="fp fp-4"></div>
+          <div class="fp fp-5"></div>
+          <div class="fp fp-6"></div>
+          <div class="flower-core"></div>
+        </div>
+
+        <div class="flower glow-flower flower-right bloomed sway" data-flower="" style="--sway-dur: 5.1s; --sway-delay: 0.6s; --flower-scale: 0.97;">
+          <div class="flower-glow"></div>
+          <div class="fp fp-1"></div>
+          <div class="fp fp-2"></div>
+          <div class="fp fp-3"></div>
+          <div class="fp fp-4"></div>
+          <div class="fp fp-5"></div>
+          <div class="fp fp-6"></div>
+          <div class="flower-core"></div>
+        </div>
+
+        <div class="flower glow-flower flower-far-right bloomed sway" data-flower="" style="--sway-dur: 4.6s; --sway-delay: 0.45s; --flower-scale: 1.06;">
+          <div class="flower-glow"></div>
+          <div class="fp fp-1"></div>
+          <div class="fp fp-2"></div>
+          <div class="fp fp-3"></div>
+          <div class="fp fp-4"></div>
+          <div class="fp fp-5"></div>
+          <div class="fp fp-6"></div>
+          <div class="flower-core"></div>
+        </div>
+
+      </div>
+    </div>
+
+    </div>
+
+    <p class="hint">Tap the bouquet for a little magic ✨</p>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const petalsContainer = document.getElementById("petals");
+      const bouquet = document.getElementById("bouquet");
+      const grassEl = document.getElementById("grass");
+      const flowerParticlesEl = document.getElementById("flowerParticles");
+
+      /* Grass blades — small clusters at the base of each stem, hugging the ground line */
+      if (grassEl) {
+        const stemBaseSpots = [50.0, 32.1, 67.9, 15.4, 84.6]; // mapped to each stem's base position
+        const perCluster = prefersReduced ? 2 : 3;
+
+        stemBaseSpots.forEach(function (centerPct, clusterIdx) {
+          for (let i = 0; i < perCluster; i++) {
+            const blade = document.createElement("div");
+            blade.className = "grass-blade";
+            const jitter = (i - (perCluster - 1) / 2) * 3.2 + (Math.random() * 2 - 1);
+            blade.style.left = Math.min(97, Math.max(3, centerPct + jitter)) + "%";
+            blade.style.setProperty("--gh", (9 + Math.random() * 8) + "px");
+            blade.style.setProperty("--gr", (Math.random() * 20 - 10) + "deg");
+            blade.style.setProperty("--gd", (1.4 + Math.random() * 0.6 + clusterIdx * 0.05) + "s");
+            grassEl.appendChild(blade);
+          }
+        });
+      }
+
+      /* Glowing particles around flowers */
+      if (flowerParticlesEl && !prefersReduced) {
+        const spots = [
+          { left: "22%", top: "38%" }, { left: "30%", top: "48%" },
+          { left: "42%", top: "32%" }, { left: "50%", top: "42%" },
+          { left: "58%", top: "36%" }, { left: "68%", top: "46%" },
+          { left: "35%", top: "55%" }, { left: "55%", top: "52%" },
+          { left: "46%", top: "28%" }, { left: "62%", top: "58%" },
+          { left: "26%", top: "58%" }, { left: "72%", top: "40%" }
+        ];
+        spots.forEach(function (spot, i) {
+          const p = document.createElement("div");
+          p.className = "f-particle";
+          p.style.left = spot.left;
+          p.style.top = spot.top;
+          p.style.setProperty("--ps", (3 + Math.random() * 3) + "px");
+          p.style.setProperty("--pd", (2.5 + Math.random() * 2) + "s");
+          p.style.setProperty("--pdl", (i * 0.25) + "s");
+          p.style.setProperty("--px", (Math.random() * 16 - 8) + "px");
+          p.style.setProperty("--py", (-8 - Math.random() * 14) + "px");
+          p.style.setProperty("--po", (0.6 + Math.random() * 0.35).toFixed(2));
+          flowerParticlesEl.appendChild(p);
+        });
+      }
+
+      /* Floating background petals */
+      function createPetal() {
+        const p = document.createElement("div");
+        p.className = "petal";
+        const size = 8 + Math.random() * 14;
+        p.style.setProperty("--size", size + "px");
+        p.style.left = Math.random() * 100 + "%";
+        p.style.setProperty("--rot", Math.random() * 360 + "deg");
+        p.style.setProperty("--dur", (10 + Math.random() * 14) + "s");
+        p.style.setProperty("--delay", (Math.random() * 8) + "s");
+        p.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
+        p.style.setProperty("--peak", (0.35 + Math.random() * 0.45).toFixed(2));
+        petalsContainer.appendChild(p);
+        return p;
+      }
+
+      const PETAL_COUNT = prefersReduced ? 6 : (window.innerWidth < 480 ? 14 : 22);
+      const petalPool = [];
+
+      for (let i = 0; i < PETAL_COUNT; i++) {
+         petalPool.push(createPetal());
+      }
+
+      if (!prefersReduced) {
+        petalsContainer.addEventListener("animationiteration", function (e) {
+          if (e.target.classList.contains("petal")) {
+            e.target.style.left = Math.random() * 100 + "%";
+          }
+        }, true);
+      }
+
+      /* Petals shedding from the bouquet itself — spawned at the bouquet's
+         real on-screen rect so they visibly fall away from the flowers,
+         not just from the top of the viewport. */
+      function shedPetalsFromBouquet(count) {
+        if (prefersReduced || !bouquet) return;
+
+        const rect = bouquet.getBoundingClientRect();
+        // Origin points roughly across the upper/middle band of the bouquet,
+        // where the flower heads sit.
+        const originXs = [0.22, 0.38, 0.5, 0.64, 0.8];
+
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement("div");
+          p.className = "petal-from-bouquet";
+          const size = 7 + Math.random() * 9;
+          const ox = rect.left + rect.width * originXs[i % originXs.length] + (Math.random() * 16 - 8);
+          const oy = rect.top + rect.height * (0.32 + Math.random() * 0.18);
+
+          p.style.left = ox + "px";
+          p.style.top = oy + "px";
+          p.style.setProperty("--size", size + "px");
+          p.style.setProperty("--rot", (Math.random() * 360) + "deg");
+          p.style.setProperty("--bp-x", (Math.random() * 90 - 45).toFixed(0) + "px");
+          p.style.setProperty("--bp-y", (110 + Math.random() * 90).toFixed(0) + "px");
+          p.style.setProperty("--bp-dur", (1.8 + Math.random() * 0.8).toFixed(2) + "s");
+          p.style.setProperty("--peak", (0.55 + Math.random() * 0.3).toFixed(2));
+
+          document.body.appendChild(p);
+
+          const lifeMs = (1.8 + 0.8) * 1000 + 200;
+          setTimeout(function () {
+            if (p.parentNode) p.parentNode.removeChild(p);
+          }, lifeMs);
+        }
+      }
+
+      // A gentle, occasional ambient shed so petals drift from the bouquet
+      // on their own from time to time, independent of taps.
+      if (!prefersReduced) {
+        setTimeout(function ambientShed() {
+          shedPetalsFromBouquet(1 + Math.floor(Math.random() * 2));
+          setTimeout(ambientShed, 5000 + Math.random() * 4000);
+        }, 4500 + Math.random() * 2000);
+      }
+
+      /* Fading welcome whisper — shows once, 3–5s after the page opens */
+      (function () {
+        const showAt = 3000 + Math.random() * 2000; // 3-5s
+        setTimeout(function () {
+          const toast = document.createElement("div");
+          toast.className = "whisper-toast";
+          toast.setAttribute("aria-live", "polite");
+          toast.textContent = "Everyone buys flowers, I\nprogrammed them for you.";
+          document.body.appendChild(toast);
+          const removeAfter = prefersReduced ? 4000 : 5600; // matches whisperFade duration
+          setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, removeAfter);
+        }, showAt);
+      })();
+
+      /* After bloom, enable gentle sway */
+      const flowers = document.querySelectorAll("[data-flower]");
+      const maxDelay = 1.1;
+      const bloomDuration = 1.1;
+
+      setTimeout(function () {
+        flowers.forEach(function (f, i) {
+          f.classList.add("bloomed", "sway");
+          f.style.setProperty("--sway-dur", (3.5 + (i % 3) * 0.8) + "s");
+          f.style.setProperty("--sway-delay", (i * 0.3) + "s");
+        });
+      }, (maxDelay + bloomDuration) * 1000);
+
+      /* Touch / click sparkle interaction */
+      const sparkles = ["✨", "💕", "🌸", "💖", "✿"];
+      let lastTap = 0;
+
+      function addSparkle(x, y) {
+        const el = document.createElement("span");
+        el.className = "sparkle";
+        el.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.style.setProperty("--sx", (Math.random() * 60 - 30) + "px");
+        el.style.setProperty("--sy", (-30 - Math.random() * 50) + "px");
+        document.body.appendChild(el);
+        el.addEventListener("animationend", function () { el.remove(); });
+      }
+
+      function burstPetals(x) {
+        if (prefersReduced) return;
+        for (let i = 0; i < 4; i++) {
+          const p = createPetal();
+          p.style.left = x + "%";
+          p.style.animationDuration = (6 + Math.random() * 4) + "s";
+          p.style.animationDelay = "0s";
+          setTimeout(function () { p.remove(); }, 10000);
+        }
+      }
+
+      function handleInteract(clientX, clientY) {
+        const now = Date.now();
+        if (now - lastTap < 280) return;
+        lastTap = now;
+
+        addSparkle(clientX, clientY);
+
+        const rect = bouquet.getBoundingClientRect();
+        const relX = ((clientX - rect.left) / rect.width) * 100;
+        burstPetals(Math.min(95, Math.max(5, relX)));
+        shedPetalsFromBouquet(3 + Math.floor(Math.random() * 3));
+
+        const wrapEl = bouquet.querySelector(".wrap");
+        wrapEl.classList.remove("bounce");
+        // restart the animation even if it's already mid-play
+        void wrapEl.offsetWidth;
+        wrapEl.classList.add("bounce");
+        wrapEl.addEventListener("animationend", function onBounceEnd() {
+          wrapEl.classList.remove("bounce");
+          wrapEl.removeEventListener("animationend", onBounceEnd);
+        });
+      }
+
+      bouquet.addEventListener("click", function (e) {
+        handleInteract(e.clientX, e.clientY);
+      });
+
+      bouquet.addEventListener("touchend", function (e) {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        if (t) handleInteract(t.clientX, t.clientY);
+      }, { passive: false });
+
+      /* Resize: adjust petal count on orientation change */
+      let resizeTimer;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          const target = window.innerWidth < 480 ? 14 : 22;
+          while (petalPool.length < target) petalPool.push(createPetal());
+          while (petalPool.length > target && petalsContainer.lastChild) {
+            petalsContainer.removeChild(petalsContainer.lastChild);
+            petalPool.pop();
+          }
+        }, 200);
+      });
+
+      /* Global tap/click emoji burst — fires anywhere on screen.
+         pointerdown is primary (unifies mouse/touch/pen across modern
+         Chrome, Safari, Firefox, Android & iOS). touchstart is kept as a
+         fallback for older browsers without Pointer Events, and click as
+         a final fallback (e.g. keyboard-activated or synthetic clicks).
+         A short dedup window stops the same physical tap from firing
+         more than one burst when multiple event types fire together. */
+      const emojiBurstLayer = document.getElementById("emojiBurstLayer");
+      const burstEmojiSet = ["❤️", "🌹", "🌸", "✨", "💖", "💕", "🌺"];
+      const EMOJI_BURST_COUNT = prefersReduced ? 0 : (window.innerWidth < 480 ? 6 : 8);
+
+      function spawnEmojiBurst(x, y) {
+        if (prefersReduced || !emojiBurstLayer || EMOJI_BURST_COUNT === 0) return;
+
+        for (let i = 0; i < EMOJI_BURST_COUNT; i++) {
+          const el = document.createElement("span");
+          el.className = "emoji-burst";
+          el.textContent = burstEmojiSet[Math.floor(Math.random() * burstEmojiSet.length)];
+
+          // Spread emojis in a loose upward fan so they float apart naturally
+          const angle = (-90 + (Math.random() * 140 - 70)) * (Math.PI / 180);
+          const distance = 60 + Math.random() * 90;
+          const ex = Math.cos(angle) * distance;
+          const ey = Math.sin(angle) * distance;
+          const rot = (Math.random() * 70 - 35);
+          const dur = 1.5 + Math.random() * 0.5;
+          const size = 1.1 + Math.random() * 0.7;
+          const delay = Math.random() * 0.12;
+
+          el.style.left = x + "px";
+          el.style.top = y + "px";
+          el.style.setProperty("--eb-x", ex.toFixed(1) + "px");
+          el.style.setProperty("--eb-y", ey.toFixed(1) + "px");
+          el.style.setProperty("--eb-rot", rot.toFixed(1) + "deg");
+          el.style.setProperty("--eb-dur", dur.toFixed(2) + "s");
+          el.style.setProperty("--eb-size", size.toFixed(2) + "rem");
+          el.style.animationDelay = delay.toFixed(2) + "s";
+
+          emojiBurstLayer.appendChild(el);
+
+          // Clean up after animation completes (delay + duration + small buffer)
+          const lifeMs = (delay + dur) * 1000 + 150;
+          setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+          }, lifeMs);
+        }
+      }
+
+      let lastGlobalTapTime = 0;
+      let lastGlobalTapX = -9999;
+      let lastGlobalTapY = -9999;
+      const TAP_DEDUP_MS = 350;
+      const TAP_DEDUP_DIST = 24; // px — treat near-identical coords as the same physical tap
+      const BOUQUET_BOUNCE_MS = 500; // matches the .wrap bounce animation duration
+
+      function handleGlobalTap(clientX, clientY, targetEl) {
+        if (typeof clientX !== "number" || typeof clientY !== "number") return;
+
+        const now = Date.now();
+        const dx = clientX - lastGlobalTapX;
+        const dy = clientY - lastGlobalTapY;
+        const closeEnough = (dx * dx + dy * dy) <= (TAP_DEDUP_DIST * TAP_DEDUP_DIST);
+
+        if (now - lastGlobalTapTime < TAP_DEDUP_MS && closeEnough) return;
+
+        lastGlobalTapTime = now;
+        lastGlobalTapX = clientX;
+        lastGlobalTapY = clientY;
+
+        // If the tap landed on the bouquet, let it bounce first, then burst —
+        // everywhere else the emojis appear immediately at the tap point.
+        const onBouquet = !!(targetEl && bouquet && bouquet.contains(targetEl));
+        if (onBouquet) {
+          setTimeout(function () { spawnEmojiBurst(clientX, clientY); }, BOUQUET_BOUNCE_MS);
+        } else {
+          spawnEmojiBurst(clientX, clientY);
+        }
+      }
+
+      // Primary: Pointer Events — fires for mouse, touch, and pen alike
+      // on modern Chrome, Safari (iOS 13+), Firefox, and Android browsers.
+      if (window.PointerEvent) {
+        document.addEventListener("pointerdown", function (e) {
+          // Ignore non-primary touches (e.g. extra fingers in a multi-touch gesture)
+          if (e.isPrimary === false) return;
+          handleGlobalTap(e.clientX, e.clientY, e.target);
+        }, { passive: true });
+      }
+
+      // Fallback: touchstart for older mobile browsers without Pointer Events.
+      // Captures the exact finger position at touch-down time.
+      document.addEventListener("touchstart", function (e) {
+        const t = e.touches && e.touches[0];
+        if (t) handleGlobalTap(t.clientX, t.clientY, e.target);
+      }, { passive: true });
+
+      // Fallback: click — covers mouse clicks on browsers without Pointer
+      // Events, and any synthetic/keyboard-activated clicks.
+      document.addEventListener("click", function (e) {
+        handleGlobalTap(e.clientX, e.clientY, e.target);
+      });
+    })();
+  </script>
+
+
+</body></html>
